@@ -7,8 +7,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+	"deploy": "gh-pages -d dist"
   },
+  "homepage": "https://sysix-ctrl.github.io/demoTrafficViz",
   "private": true,
   "dependencies": {
     "@angular/animations": "~9.1.6",
@@ -24,6 +26,7 @@
     "@asymmetrik/ngx-leaflet": "^7.0.1",
     "@types/leaflet": "^1.5.16",
     "d3": "^5.16.0",
+    "gh-pages": "^3.1.0",
     "leaflet": "^1.6.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
