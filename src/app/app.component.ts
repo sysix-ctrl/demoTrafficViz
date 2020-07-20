@@ -92,8 +92,8 @@ export class AppComponent {
     const xx = 0.0015;
     const yy = 0.003;
 
-    const startLat = 48.123447;
-    const startLon = 11.553672;
+    const startLat = 48.133447;
+    const startLon = 11.533672;
     let lat = startLat;
     let lon = startLon;
 
@@ -116,13 +116,17 @@ export class AppComponent {
           new LatLng(lat - xx, lon - xx),
           new LatLng(lat, lon - yy)
         ];
+
+        const rndm = Math.random() * 100;
         const poly = new Polygon(array, {
-          color: bla(Math.random() * 100),
+          color: bla(rndm),
           weight: 0,
           opacity: 1,
           fillOpacity: .4
-
         });
+
+        poly.bindPopup("Luftbelastung <b>" + rndm + " µg/m³</b>").openPopup();
+
         map.addLayer(poly);
       }
       lon = startLon;
@@ -138,15 +142,26 @@ export class AppComponent {
 
       if (this.methode === "heat") {
         this.drawheatmap();
+      } else {
+        if(this.map != null)
+          this.repaint(this.map);
       }
     });
   }
 
+
+
   handleMapMoveEnd(e: LeafletEvent) {
-    this.repaint((e.sourceTarget as Map));
+    if (this.methode !== 'heat'){
+
+      this.repaint((e.sourceTarget as Map));
+    }
   }
   handleMapZoomEnd(e: LeafletEvent) {
-    this.repaint((e.sourceTarget as Map));
+    if (this.methode !== 'heat') {
+
+      this.repaint((e.sourceTarget as Map));
+    }
   }
 
   transformRange(value: number, r1: any, r2: any) {
@@ -226,6 +241,9 @@ export class AppComponent {
 
   onMapReady(map: Map) {
     this.map = map;
-    this.repaint(map);
+    if (this.methode == null) {
+
+      //this.repaint(this.map);
+    }
   }
 }
