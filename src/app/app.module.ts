@@ -7,6 +7,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { LoginComponent } from './login/login.component';
 import { FilterComponent } from './filter/filter.component';
 import {LeafletModule} from '@asymmetrik/ngx-leaflet';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {LeafletModule} from '@asymmetrik/ngx-leaflet';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    LeafletModule
+    LeafletModule,
+    RouterModule.forRoot([]),
   ],
   providers: [],
   bootstrap: [AppComponent]
