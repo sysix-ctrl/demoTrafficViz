@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
 	"deploy": "gh-pages -d dist"
   },
-  "homepage": "https://sysix-ctrl.github.io/demoTrafficViz",
+  "homepage": "/demoTrafficViz",
   "private": true,
   "dependencies": {
     "@angular/animations": "~9.1.6",

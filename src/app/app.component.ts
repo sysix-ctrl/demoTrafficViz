@@ -9,6 +9,15 @@ import * as d3 from 'd3';
 })
 export class AppComponent {
   title = 'demoTrafficViz';
+  
+  routes = [
+    [48.143487, 11.573688, 48.145355, 11.574643],
+    [48.144547, 11.569761, 48.143487, 11.573688],
+    [48.144547, 11.569761, 48.145149, 11.569493],
+    [48.145149, 11.569493, 48.146881, 11.570598],
+    [48.146881, 11.570598, 48.146144, 11.573248],
+    [48.146144, 11.573248, 48.148198, 11.574578]
+  ];
 
   layer: Polyline[] = [];
 
@@ -33,7 +42,7 @@ export class AppComponent {
   });
 
   // Marker for the parking lot at the base of Mt. Ranier trails
-  paradise = marker([ 46.78465227596462,-121.74141269177198 ], {
+  paradise = marker([ 48.1455875, 11.5687117 ], {
     icon: icon({
       iconSize: [ 25, 41 ],
       iconAnchor: [ 13, 41 ],
@@ -96,19 +105,12 @@ export class AppComponent {
   repaint(map: Map) {
     this.layer.forEach(e => map.removeLayer(e));
     this.layer = [];
-
-    const routes = [
-      [48.143487, 11.573688, 48.145355, 11.574643],
-      [48.144547, 11.569761, 48.143487, 11.573688],
-      [48.144547, 11.569761, 48.145149, 11.569493],
-      [48.145149, 11.569493, 48.146881, 11.570598],
-      [48.146881, 11.570598, 48.146144, 11.573248],
-      [48.146144, 11.573248, 48.148198, 11.574578]
-    ];
+   
     const zoomlevel = 10 - Math.abs(this.transformRange(map.getZoom(), {max: 10, min: 20}, {max: 1, min: 10})) * 1.2;
 
     const bla = d3.scaleLinear().domain([1, 100]).range(['#1aed36', '#f51e0f']);
-    routes.forEach( e => {
+    
+    this.routes.forEach( e => {
       const polyLine = new Polyline([new LatLng(e[0], e[1]), new LatLng(e[2], e[3])], {
         color: bla(Math.random() * 100),
         opacity: 1,
@@ -119,6 +121,19 @@ export class AppComponent {
       map.addLayer(polyLine);
       this.layer.push(polyLine);
 
+      if(map.getZoom() <= 15) {
+        return;
+      }
+      const paradise = marker([ e[0],e[1] ], {
+        icon: icon({
+          iconSize: [ 25, 41 ],
+          iconAnchor: [ 13, 41 ],
+          iconUrl: 'leaflet/marker-icon.png',
+          iconRetinaUrl: 'leaflet/marker-icon-2x.png',
+          shadowUrl: 'leaflet/marker-shadow.png'
+        })
+      });
+      map.addLayer(paradise);
       // polyLine.addTo(map);
     });
 
