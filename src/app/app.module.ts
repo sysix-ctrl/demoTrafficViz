@@ -8,19 +8,25 @@ import { LoginComponent } from './login/login.component';
 import { FilterComponent } from './filter/filter.component';
 import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 import {RouterModule} from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { ChartsModule } from 'ng2-charts';
+import { MyLineChartComponent } from './my-line-chart/my-line-chart.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     OverviewComponent,
     LoginComponent,
-    FilterComponent
+    FilterComponent,
+    MyLineChartComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     LeafletModule,
     RouterModule.forRoot([]),
+    HttpClientModule,
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

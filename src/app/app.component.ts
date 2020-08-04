@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import {icon, latLng, marker, polyline, tileLayer, Map, Path, Layer, Polyline, LatLng, LeafletEvent, Polygon} from 'leaflet';
+import { Component, Injector, ComponentFactoryResolver } from '@angular/core';
+import {icon, latLng, marker, polyline, tileLayer, Map, Path, Layer, Polyline, LatLng, LeafletEvent, Polygon, circle} from 'leaflet';
 import * as d3 from 'd3';
 import {ActivatedRoute} from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -23,63 +24,15 @@ export class AppComponent {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   });
 
-  // Marker for the top of Mt. Ranier
-  summit = marker([ 48.1455875, 11.5687117 ], {
-    icon: icon({
-      iconSize: [ 25, 41 ],
-      iconAnchor: [ 13, 41 ],
-      iconUrl: 'leaflet/marker-icon.png',
-      shadowUrl: 'leaflet/marker-shadow.png'
-    })
-  });
-
-  // Marker for the parking lot at the base of Mt. Ranier trails
-  paradise = marker([ 46.78465227596462,-121.74141269177198 ], {
-    icon: icon({
-      iconSize: [ 25, 41 ],
-      iconAnchor: [ 13, 41 ],
-      iconUrl: 'leaflet/marker-icon.png',
-      iconRetinaUrl: 'leaflet/marker-icon-2x.png',
-      shadowUrl: 'leaflet/marker-shadow.png'
-    })
-  });
-
-  // Path from paradise to summit - most points omitted from this example for brevity
-  route = polyline([[ 46.78465227596462, -121.74141269177198 ],
-    [ 46.80047278292477, -121.73470708541572 ],
-    [ 46.815471360459924, -121.72521826811135 ],
-    [ 46.8360239546746, -121.7323131300509 ],
-    [ 46.844306448474526, -121.73327445052564 ],
-    [ 46.84979408048093, -121.74325201660395 ],
-    [ 46.853193528950214, -121.74823296256363 ],
-    [ 46.85322881676257, -121.74843915738165 ],
-    [ 46.85119913890958, -121.7519719619304 ],
-    [ 46.85103829018772, -121.7542376741767 ],
-    [ 46.85101557523012, -121.75431755371392 ],
-    [ 46.85140013694763, -121.75727385096252 ],
-    [ 46.8525277543813, -121.75995212048292 ],
-    [ 46.85290292836726, -121.76049157977104 ],
-    [ 46.8528160918504, -121.76042997278273 ]]);
-
-  // Layers control object with our two base layers and the three overlay layers
-  layersControl = {
-    baseLayers: {
-      'Street Maps': this.streetMaps,
-      'Wikimedia Maps': this.wMaps
-    },
-    overlays: {
-      'Mt. Rainier Summit': this.summit,
-      'Mt. Rainier Paradise Start': this.paradise,
-      'Mt. Rainier Climb Route': this.route
-    }
-  };
 
   // Set the initial set of displayed layers (we could also use the leafletLayers input binding for this)
   options = {
-    layers: [ this.streetMaps, this.route, this.summit, this.paradise ],
+    layers: [ this.streetMaps ],
     zoom: 16,
     center: latLng([ 48.1455875, 11.5687117 ])
   };
+
+  apiBikeData = null;
 
   methode = '';
 
@@ -136,11 +89,22 @@ export class AppComponent {
     }
   }
 
-  constructor(private activatedRoute: ActivatedRoute) {
+  constructor(private activatedRoute: ActivatedRoute, private http: HttpClient, private injector: Injector, private componentFactoryResolver:ComponentFactoryResolver) {
     this.activatedRoute.queryParams.subscribe(params => {
       this.methode = params['methode'];
 
-      if (this.methode === "heat") {
+      if(this.methode === "api") {
+          
+          // TODO no CORS on muenchen endpoint implement nodejs API backend for requesting API
+          //this.http.get("https://www.opengov-muenchen.de/api/action/datastore_search_sql?sql=SELECT zaehlstelle,zaehlstelle_lang latitude, longitude, SUM(gesamt) from \"211e882d-fadd-468a-bf8a-0014ae65a393\" AS a JOIN \"74368767-f877-49c4-b908-102b0dddf2a5\" AS b USING (zaehlstelle) WHERE uhrzeit_start BETWEEN '2020-01-08' AND '2020-01-09' GROUP BY zaehlstelle,zaehlstelle_lang, latitude, longitude", {responseType:'json'}).subscribe(d => {
+          //  console.log(d);
+          //});
+          this.apiBikeData = {"help": "https://www.opengov-muenchen.de/api/3/action/help_show?name=datastore_search_sql", "success": true, "result": {"records": [{"latitude": "48.13192", "sum": "75535", "zaehlstelle": "Erhardt", "longitude": "11.58469", "zaehlstelle_lang": "Erhardtstr. (Deutsches Museum)"}, {"latitude": "48.14205", "sum": "25754", "zaehlstelle": "Arnulf", "longitude": "11.55534", "zaehlstelle_lang": "Arnulfstr. 9 - 11 S\u00fcdseite"}, {"latitude": "48.12194", "sum": "4863", "zaehlstelle": "Kreuther", "longitude": "11.62417", "zaehlstelle_lang": "Bad-Kreuther-Str."}, {"latitude": "48.16887", "sum": "33407", "zaehlstelle": "Olympia", "longitude": "11.55005", "zaehlstelle_lang": "Rudolf-Harbig-Weg (Olympia Park)"}, {"latitude": "48.14438", "sum": "23685", "zaehlstelle": "Hirsch", "longitude": "11.51794", "zaehlstelle_lang": "Birketweg HLP (Hirschgarten)"}, {"latitude": "48.12032", "sum": "54815", "zaehlstelle": "Margareten", "longitude": "11.53599", "zaehlstelle_lang": "Margaretenstr. (Harras)"}], "fields": [{"type": "text", "id": "zaehlstelle"}, {"type": "text", "id": "zaehlstelle_lang"}, {"type": "numeric", "id": "latitude"}, {"type": "numeric", "id": "longitude"}, {"type": "numeric", "id": "sum"}], "sql": "SELECT zaehlstelle,zaehlstelle_lang,\n latitude, longitude, SUM(gesamt)\nfrom \n\"211e882d-fadd-468a-bf8a-0014ae65a393\" AS a\nJOIN \n\"74368767-f877-49c4-b908-102b0dddf2a5\" AS b\nUSING (zaehlstelle)\nWHERE uhrzeit_start BETWEEN '2020-01-08' AND '2020-01-09' GROUP BY zaehlstelle,zaehlstelle_lang, latitude, longitude"}}
+          console.log("test");
+          this.map.setZoom(12);
+          this.displayApiData();
+
+      } else if (this.methode === "heat") {
         this.drawheatmap();
       } else {
         if(this.map != null)
@@ -149,16 +113,51 @@ export class AppComponent {
     });
   }
 
+  displayApiData() {
+    const map = this.map;
 
+    if(!this.apiBikeData){
+      console.log("no Data for api");
+      return; 
+    }
+    const records = this.apiBikeData.result.records;
+    const colorRange = d3.scaleLinear().domain([1, 1000]).range(['#1a05ff', '#1aed36' ]);
+    records.forEach(e => {
+      const m = marker([ e.latitude,e.longitude ], {
+        title:"test",
+        icon: icon({
+          iconSize: [ 25, 41 ],
+          iconAnchor: [ 13, 41 ],
+          iconUrl: 'leaflet/marker-icon.png',
+          iconRetinaUrl: 'leaflet/marker-icon-2x.png',
+          shadowUrl: 'leaflet/marker-shadow.png'
+        })
+      });
+      const c = circle([ e.latitude,e.longitude ], {
+        radius: e.sum/90,
+        color: colorRange(e.sum/90),
+        opacity: .9,
+        fillOpacity: .6
+     });
+      m.bindPopup("<b>" + e.zaehlstelle + "</b><br>"+ e.zaehlstelle_lang + "<br> Gezählte Fahrräder:" + e.sum +"<app-chart></app-chart>").openPopup();
+      map.addLayer(m);
+      map.addLayer(c);
+    });
+  }
+
+  checkIfRepaint() {
+    return this.methode !== 'heat' && this.methode !== 'api';
+  }
 
   handleMapMoveEnd(e: LeafletEvent) {
-    if (this.methode !== 'heat'){
+    if (this.checkIfRepaint()) {
 
       this.repaint((e.sourceTarget as Map));
     }
   }
+
   handleMapZoomEnd(e: LeafletEvent) {
-    if (this.methode !== 'heat') {
+    if (this.checkIfRepaint()) {
 
       this.repaint((e.sourceTarget as Map));
     }
