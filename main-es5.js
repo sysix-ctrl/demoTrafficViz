@@ -398,12 +398,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     var _asymmetrik_ngx_leaflet__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(
     /*! @asymmetrik/ngx-leaflet */
     "./node_modules/@asymmetrik/ngx-leaflet/__ivy_ngcc__/dist/index.js");
-    /* harmony import */
-
-
-    var _my_line_chart_my_line_chart_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(
-    /*! ./my-line-chart/my-line-chart.component */
-    "./src/app/my-line-chart/my-line-chart.component.ts");
 
     var AppComponent = /*#__PURE__*/function () {
       function AppComponent(activatedRoute, http, injector, componentFactoryResolver) {
@@ -669,7 +663,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
       type: AppComponent,
       selectors: [["app-root"]],
-      decls: 2,
+      decls: 1,
       vars: 1,
       consts: [["leaflet", "", 1, "map", 3, "leafletOptions", "leafletMapReady", "leafletMapMoveEnd", "leafletMapZoomEnd"]],
       template: function AppComponent_Template(rf, ctx) {
@@ -685,15 +679,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
           });
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "app-my-line-chart");
         }
 
         if (rf & 2) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("leafletOptions", ctx.options);
         }
       },
-      directives: [_asymmetrik_ngx_leaflet__WEBPACK_IMPORTED_MODULE_5__["LeafletDirective"], _my_line_chart_my_line_chart_component__WEBPACK_IMPORTED_MODULE_6__["MyLineChartComponent"]],
+      directives: [_asymmetrik_ngx_leaflet__WEBPACK_IMPORTED_MODULE_5__["LeafletDirective"]],
       styles: [".map[_ngcontent-%COMP%] {\n    height: 100%;\n    padding: 0;\n}\n.leaflet-popup-content-wrapper[_ngcontent-%COMP%] {\n    width:800px;\n    height: 800px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvYXBwLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxZQUFZO0lBQ1osVUFBVTtBQUNkO0FBQ0E7SUFDSSxXQUFXO0lBQ1gsYUFBYTtBQUNqQiIsImZpbGUiOiJzcmMvYXBwL2FwcC5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLm1hcCB7XG4gICAgaGVpZ2h0OiAxMDAlO1xuICAgIHBhZGRpbmc6IDA7XG59XG4ubGVhZmxldC1wb3B1cC1jb250ZW50LXdyYXBwZXIge1xuICAgIHdpZHRoOjgwMHB4O1xuICAgIGhlaWdodDogODAwcHg7XG59Il19 */"]
     });
     /*@__PURE__*/
