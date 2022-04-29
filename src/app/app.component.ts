@@ -29,7 +29,7 @@ export class AppComponent {
   options = {
     layers: [ this.streetMaps ],
     zoom: 16,
-    center: latLng([ 48.1455875, 11.5687117 ])
+    center: latLng([ 52.518370886274596, 13.529427978848606 ])
   };
 
   apiBikeData = null;
@@ -93,23 +93,12 @@ export class AppComponent {
     this.activatedRoute.queryParams.subscribe(params => {
       this.methode = params['methode'];
 
-      if(this.methode === "api") {
-          
-          // TODO no CORS on muenchen endpoint implement nodejs API backend for requesting API
-          //this.http.get("https://www.opengov-muenchen.de/api/action/datastore_search_sql?sql=SELECT zaehlstelle,zaehlstelle_lang latitude, longitude, SUM(gesamt) from \"211e882d-fadd-468a-bf8a-0014ae65a393\" AS a JOIN \"74368767-f877-49c4-b908-102b0dddf2a5\" AS b USING (zaehlstelle) WHERE uhrzeit_start BETWEEN '2020-01-08' AND '2020-01-09' GROUP BY zaehlstelle,zaehlstelle_lang, latitude, longitude", {responseType:'json'}).subscribe(d => {
-          //  console.log(d);
-          //});
-          this.apiBikeData = {"help": "https://www.opengov-muenchen.de/api/3/action/help_show?name=datastore_search_sql", "success": true, "result": {"records": [{"latitude": "48.13192", "sum": "75535", "zaehlstelle": "Erhardt", "longitude": "11.58469", "zaehlstelle_lang": "Erhardtstr. (Deutsches Museum)"}, {"latitude": "48.14205", "sum": "25754", "zaehlstelle": "Arnulf", "longitude": "11.55534", "zaehlstelle_lang": "Arnulfstr. 9 - 11 S\u00fcdseite"}, {"latitude": "48.12194", "sum": "4863", "zaehlstelle": "Kreuther", "longitude": "11.62417", "zaehlstelle_lang": "Bad-Kreuther-Str."}, {"latitude": "48.16887", "sum": "33407", "zaehlstelle": "Olympia", "longitude": "11.55005", "zaehlstelle_lang": "Rudolf-Harbig-Weg (Olympia Park)"}, {"latitude": "48.14438", "sum": "23685", "zaehlstelle": "Hirsch", "longitude": "11.51794", "zaehlstelle_lang": "Birketweg HLP (Hirschgarten)"}, {"latitude": "48.12032", "sum": "54815", "zaehlstelle": "Margareten", "longitude": "11.53599", "zaehlstelle_lang": "Margaretenstr. (Harras)"}], "fields": [{"type": "text", "id": "zaehlstelle"}, {"type": "text", "id": "zaehlstelle_lang"}, {"type": "numeric", "id": "latitude"}, {"type": "numeric", "id": "longitude"}, {"type": "numeric", "id": "sum"}], "sql": "SELECT zaehlstelle,zaehlstelle_lang,\n latitude, longitude, SUM(gesamt)\nfrom \n\"211e882d-fadd-468a-bf8a-0014ae65a393\" AS a\nJOIN \n\"74368767-f877-49c4-b908-102b0dddf2a5\" AS b\nUSING (zaehlstelle)\nWHERE uhrzeit_start BETWEEN '2020-01-08' AND '2020-01-09' GROUP BY zaehlstelle,zaehlstelle_lang, latitude, longitude"}}
-          console.log("test");
-          this.map.setZoom(12);
-          this.displayApiData();
-
-      } else if (this.methode === "heat") {
-        this.drawheatmap();
-      } else {
-        if(this.map != null)
-          this.repaint(this.map);
-      }
+        /*
+              console.log(this.http.get("localhost:80/iot.php?key=svdhkcsjyvhfkjascnklvsdjcklsj"));
+        this.http.get("localhost:80/iot.php?key=svdhkcsjyvhfkjascnklvsdjcklsj").subscribe(d => {
+            console.log(d);
+          });*/
+      setTimeout(this.repaint,1500);
     });
   }
 
@@ -169,7 +158,10 @@ export class AppComponent {
   }
 
   repaint(map: Map) {
-    this.layer.forEach(e => map.removeLayer(e));
+    if(!map)
+      return;
+    if(this.layer)
+      this.layer.forEach(e => map.removeLayer(e));
     this.layer = [];
 
     const routes = [
@@ -235,6 +227,31 @@ export class AppComponent {
       map.addLayer(polyLine);
       this.layer.push(polyLine);
     });
+
+    let lastLat, lastLong = undefined;
+    const vibColor = d3.scaleLinear().domain([1, 5000]).range(['#1aed36', '#f51e0f']);
+    this.http.get("http://localhost:80/iot.php?key=svdhkcsjyvhfkjascnklvsdjcklsj", {responseType:'json'}).subscribe(d => {
+      d.forEach( e => {
+        if(lastLat === undefined) {
+          lastLat = e.lat;
+          lastLong = e.lng;
+          return;
+        }
+        const polyLine = new Polyline([new LatLng(lastLat, lastLong), new LatLng(e.lat, e.lng)], {
+          color: vibColor(e.vibration_high),
+          opacity: 1,
+          weight: zoomlevel
+        });
+  
+        lastLat = e.lat;
+        lastLong = e.lng;
+        
+        polyLine.on('click', (f: any) => {console.log(f); });
+        polyLine.bindPopup("<b>Das Hier</b><br>könnte auch ein Diagramm sein").openPopup();
+        map.addLayer(polyLine);
+        this.layer.push(polyLine);
+      });
+    });
   }
 
 
@@ -242,7 +259,7 @@ export class AppComponent {
     this.map = map;
     if (this.methode == null) {
 
-      //this.repaint(this.map);
+      this.repaint(this.map);
     }
   }
 }
